@@ -11,15 +11,13 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 
 exports.sendOutgoingSMS =
-function (message, receiver, sender) {
-    client.messages
-      .create({
-        body: message,
-        from: sender,
-        to: receiver
-      })
-    .then(message => console.log(message.sid))
-    .catch(err => console.log(err));
+async function (message, receiver, sender) {
+  return client.messages
+    .create({
+      body: message,
+      from: sender,
+      to: receiver
+    });
 };
 
 app.post('/sms', (req, res) => {
