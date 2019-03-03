@@ -11,9 +11,13 @@ var client = redis.createClient({
 
 
 
-["ping", "set", "get", "hmset", "hmget", "expire"].forEach(eta => {
+["ping", "set", "get", "hmset", "hmget", "expire", "hgetall"].forEach(eta => {
   client["async_" + eta] = promisifyRedis(client, client[eta]);
 });
+
+
+
+
 
 
 function getRandomInt(max) {
@@ -38,10 +42,14 @@ function promisifyRedis (client, func)
 }
 
 
+const optIns = ["STOP", "STOPALL", "UNSUBSCRIBE", "CANCEL", "END", "QUIT"];
+const optOuts = ["START", "YES", "UNSTOP"];
+const groupSpawns = ["NEW", "LFG", "GROUP"];
+
 
 exports.IncomingRawSMS =
-  function IncomingRawSMS(message, twilioPhoneNum, senderPhoneNum) {
-    //message = text that user inputs
+  function (message, twilioPhoneNum, senderPhoneNum) {
+
   };
 
 
@@ -53,13 +61,14 @@ async function userExists (phone, roomID)
 }
 
 
-function sendMessage(userInfo) {
-  if ( userInfo.message == '' )
-    throw('sendMessage - No message supplied from "' + userInfo.phoneNum + '"');
+async function sendMessage(roomID, from, message) {
 
-
-  throw('sendMessage - Not implemented');
-  // twilio - send message to other(s)
+  message = client.async_hmget(roomID, from) + ": " + message;
+  var members = await client.async_hgetall(roomID);
+  var roomNum = members.phonenumber;
+  Object.keys(members)
+    .filter(key => key != from && key != "phonenumber")
+    .forEach(rho => sms.sendOutgoingSMS(message, rho, roomNum));
 }
 
 
@@ -70,6 +79,8 @@ async function addUser(phone, nickname, roomID) {
   await client.async_hmset(roomID, [phone, nickname]);
 };
 
+
+const servicePool = [""];
 
 async function createRoom() {
   var roomID;
@@ -83,8 +94,9 @@ async function createRoom() {
     throw('RoomID "' + roomID + '" Exists');
 
   // expire in 48 hours
-  await client.async_hmset(roomID);
+  await client.async_hmset(roomID, ["phonenumber", servicePool[servicePool.length]]);
   await client.async_expire(roomID, 60 * 60 * 48);
+  //await client.async_set(twilioPhoneNum + senderPhoneNum, roomID);
 }
 
 
@@ -95,3 +107,6 @@ async function roomExists(roomID) {
     throw('roomExists - Search not implemented yet');
 }
 
+var members = {123: "Nick", 456: "Tot", 789: "jimbooo", 145: "boi" };
+var filtered = Object.filter(members, (key => key != 123));
+console.log(filtered);

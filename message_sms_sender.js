@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 
 exports.sendOutgoingSMS =
-function sendOutgoingSMS(message, receiver, sender) {
+function (message, receiver, sender) {
     client.messages
       .create({
         body: message,
