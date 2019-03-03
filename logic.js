@@ -30,7 +30,9 @@ UserInfoFactory.isUserInfo = (maybe) => {
   return Boolean(maybe && maybe.phoneNum && maybe.roomID && maybe.message);
 };
 
-
+function IncomingRawSMS(message, twilioPhoneNum, senderPhoneNum) {
+  console.log('IncomingRawSMS - ' + message);
+}
 
 function promisifyRedis (client, func)
 {
