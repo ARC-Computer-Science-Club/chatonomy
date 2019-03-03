@@ -47,9 +47,42 @@ const optIns      = ["START", "YES", "UNSTOP"];
 const groupSpawns = ["NEW", "LFG", "GROUP"];
 
 
-exports.IncomingRawSMS =
-  function (message, twilioPhoneNum, senderPhoneNum) {
+//async_hgetall(??)
 
+exports.IncomingRawSMS =
+  async function (message, twilioPhoneNum, senderPhoneNum) {
+    var parced = message.match('/(?<opt>\w+)(?:(?:\s+)(?<inputA>\w+)(?:(?:\s+)(?<inputB>\w+)|)|)/mg');
+
+    if ( groupSpawns.includes( parced['opt'] )) {
+      if( !inputA && !inputB ) 
+      {
+        var roomID = await createRoom(senderPhoneNum);
+        await sms.sendOutgoingSMS('"' + roomID + '" created at ' + await getRoomNum(roomID));
+      }
+      var reqRoomID = parced['inputA'].trim();
+      //var existRoomID = async_hmget(twilioPhoneNum, senderPhoneNum);
+      if (await roomExists(reqRoomID) ) {
+        await sms.sendOutgoingSMS('"' + reqRoomID + '" is in use.');
+        return;
+      }
+
+      if( parced['inputB'] == senderPhoneNum ) {
+        await sms.sendOutgoingSMS('Nickname cannot be your phonenumber.');
+        return;
+      }
+
+      await sms.sendOutgoingSMS('Hi ' + nickname + '! Welcome to "' + reqRoomID + '"!');
+      var nickname = parced['inputB'];
+      await addUser( senderPhoneNum, nickname, reqRoomID );
+    }
+    else if ( optOuts.includes( parced['opt'] )) {
+      await killUser(senderPhoneNum);
+    }
+    else if ( optIns.includes( parced['opt'] )) {
+      // do nothing intentionally
+    }
+
+    await sendMessage(await getRoomID(twilioPhoneNum, senderPhoneNum),senderPhoneNum, message);    
   };
 
 
