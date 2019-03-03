@@ -1,1 +1,5 @@
 runtime: nodejs8
+
+env_variables:
+  REDISHOST: 10.0.0.3
+  REDISPORT: 6379

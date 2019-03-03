@@ -1,8 +1,62 @@
-var userInfo = {
-  phoneNum: -1,
-  roomID: -1,
-  message: ''
+const redis = require('redis');
+
+const REDISHOST = process.env.REDISHOST || 'localhost';
+const REDISPORT = process.env.REDISPORT || 6379;
+
+
+var client = redis.createClient({
+  host: REDISHOST,
+  port: REDISPORT
+});
+
+
+
+["ping", "set", "get"].forEach(eta => {
+  client["async_" + eta] = promisifyRedis(client, client[eta]);
+});
+
+
+var UserInfoFactory = (phoneNumber, roomID, message) => {
+  var userInfo = {
+    phoneNum: -1,
+    roomID: -1,
+    message: ''
+  };
+
+  return userInfo;
+};
+
+UserInfoFactory.isUserInfo = (maybe) => {
+  return Boolean(maybe && maybe.phoneNum && maybe.roomID && maybe.message);
+};
+
+
+
+function promisifyRedis (client, func)
+{
+  return function newFunction ()
+  {
+    return new Promise((resolve, reject) => {
+      var params = Array.from(arguments);
+      params.push((err, reply) => {
+        if (err) reject(err);
+        else resolve(reply);
+      });
+      console.log(params);
+      func.apply(client, params);
+    });
+  };
 }
+
+
+
+async function userExists (phoneNum)
+{
+  var reply = await client.async_get(phoneNum);
+  if (reply) return true;
+  return false;
+}
+
 
 function validateData(inputData) {
   throw('validateData - Not implemented');
@@ -20,7 +74,8 @@ function sendMessage(userInfo) {
 function addUser(userInfo) {
   if ( userExists(userInfo.phoneNum) )
       return true; // User already exists
-  
+
+  client.set(userInfo.phoneNum)
   // db - add user
 }
 
