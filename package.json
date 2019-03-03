@@ -4,18 +4,13 @@
   "description": "SFHacks Project #write test",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ARC-Computer-Science-Club/chatonomy.git"
+    "start": "node main.js"
   },
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ARC-Computer-Science-Club/chatonomy/issues"
+  "engines": {
+    "node": ">=8"
   },
-  "homepage": "https://github.com/ARC-Computer-Science-Club/chatonomy#readme",
+  "license": "ISC",
   "dependencies": {
     "express": "^4.16.4"
   }
