@@ -1,5 +1,7 @@
-runtime: nodejs8
+runtime: nodejs
 
 env_variables:
-  REDISHOST: 10.0.0.3
-  REDISPORT: 6379
+  REDIS_HOST: 10.0.0.3
+  REDIS_PORT: 6379
+
+env: flex

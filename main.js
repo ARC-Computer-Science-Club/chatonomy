@@ -16,19 +16,18 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 
 exports.sendOutgoingSMS =
-function sendOutgoingSMS(message, receiver, sender) {
-    client.messages
-      .create({
-        body: message,
-        from: sender,
-        to: receiver
-      })
-    .then(message => console.log(message.sid))
-    .catch(err => console.log(err));
+async function sendOutgoingSMS(message, receiver, sender) {
+  console.log("Made it to outgoing sms");
+  return await client.messages
+    .create({
+      body: message,
+      from: sender,
+      to: receiver
+    });
 };
 
-app.post('/sms', (req, res) => {
-  logic.IncomingRawSMS(req.body.Body, req.body.To, req.body.From);
+app.post('/sms', async (req, res) => {
+  await logic.IncomingRawSMS(req.body.Body, req.body.To, req.body.From);
   res.writeHead(200, {'Content-Type': 'text/xml'});
   res.end('');
 });
