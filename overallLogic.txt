@@ -4,8 +4,13 @@ user SMS -> Twilio -> Chatonomy
 
 parse message:
   if connection initiation then
-    if from-number is already  connected to room then
-       reply already connected
+    if from-number is already  connected to a room then
+       if already connected to the requested room then
+         reply already connected
+       else
+         force disconnect (remove row from memberships) from 
+           current connection
+         connect to requested room
     else
        insert into memberships table, associate chatter with room
     end if
