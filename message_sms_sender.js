@@ -28,6 +28,7 @@ function processIncomingSMS(message, receiver, sender) {
   logic.IncomingRawSMS(message, receiver, sender);
 }
 
+exports.sendOutgoingSMS = 
 function sendOutgoingSMS(message, receiver, sender) {
   app.post("/message", (req, res) => {
     client.messages
@@ -44,7 +45,7 @@ app.post('/sms', (req, res) => {
   //console.log(req.body.Body);	//gets the message of sender
   //console.log(req.body.From);	//gets the phone number of sender
 
-  processIncomingSMS(req.body.Body, req.body.From, req.body.To);
+  processIncomingSMS(req.body.Body, req.body.To, req.body.From);
 
   //message(req.body.Body, '+19168239140', '+19168350353');	//sends the message
   

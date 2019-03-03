@@ -1,5 +1,5 @@
 const redis = require('redis');
-
+const sms = require('./message_sms_sender');
 const REDISHOST = process.env.REDISHOST || 'localhost';
 const REDISPORT = process.env.REDISPORT || 6379;
 
@@ -30,8 +30,9 @@ UserInfoFactory.isUserInfo = (maybe) => {
   return Boolean(maybe && maybe.phoneNum && maybe.roomID && maybe.message);
 };
 
+exports.IncomingRawSMS = 
 function IncomingRawSMS(message, twilioPhoneNum, senderPhoneNum) {
-  console.log('IncomingRawSMS - ' + message);
+  //message = text that user inputs
 }
 
 function promisifyRedis (client, func)
