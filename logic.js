@@ -1,5 +1,5 @@
 const redis = require('redis');
-
+const sms = require('./message_sms_sender');
 const REDISHOST = process.env.REDISHOST || 'localhost';
 const REDISPORT = process.env.REDISPORT || 6379;
 
@@ -37,6 +37,12 @@ function promisifyRedis (client, func)
   };
 }
 
+
+
+exports.IncomingRawSMS =
+  function IncomingRawSMS(message, twilioPhoneNum, senderPhoneNum) {
+    //message = text that user inputs
+  };
 
 
 async function userExists (phone, roomID)
