@@ -1,0 +1,24 @@
+high level transactions
+
+user SMS -> Twilio -> Chatonomy
+
+parse message:
+  if connection initiation then
+    if from-number is already  connected to room then
+       reply already connected
+    else
+       insert into memberships table, associate chatter with room
+    end if
+  else // regular message
+    look up membership join chatter
+    if from-number is already in room then
+      insert into messages table
+      query membership join chatter for the associated room
+      for each member minus the sender do
+        send SMS text
+        update messageSent table depending on success/fail
+      end for
+    else
+      reply "not connected to a room"
+    end if
+  end if
