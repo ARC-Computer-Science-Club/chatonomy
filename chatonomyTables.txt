@@ -1,0 +1,37 @@
+Chatonomy database
+
+rooms table
+-----------
+primary key: id (number)
+name: string
+
+
+chatters table
+--------------
+primary key: id (number)
+phone number: string
+
+
+memberships table
+-----------------
+primary key: id (number)
+roomsId: foreign key to rooms.id
+chatterId: foreign key to chatters.id
+start: timestamp // when a member joins a room
+
+
+messages table
+--------------
+primary key: id (number)
+roomsId: foreign key to rooms.id
+message: string
+arrival: timestamp // when a message reaches the server
+
+
+messagesSent table
+------------------
+primary key: id (number)
+messageId: foreign key to messages.id
+memberId: foreign key to members.id
+sent: timestamp // when a message is sent
+status: string/integer // status of an outgoing broadcast
