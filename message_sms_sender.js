@@ -1,6 +1,6 @@
-const accountSid = 'AC61ac47ffa6fe410ccf2a4ad7cce903d8';
-const authToken = '521522fdae843c2e87e264e92baf7f33';
-const client = require('twilio')(accountSid, authToken);
+const secrets = require('./secrets.js');
+
+const client = require('twilio')(secrets.accountSid, secrets.authToken);
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -24,10 +24,10 @@ function getSID(message)
 }
 
 app.post('/sms', (req, res) => {
-  console.log(req.body.Body);
-  console.log(req.body.From);
+  console.log(req.body.Body);	//gets the message of sender
+  console.log(req.body.From);	//gets the phone number of sender
 
-  message(req.body.Body, '+19168239140', '+19168350353');
+  message(req.body.Body, '+19168239140', '+19168350353');	//sends the message
   
   res.writeHead(200, {'Content-Type': 'text/xml'});
   res.end('');
@@ -46,5 +46,3 @@ app.post("/message", (req, res) => {
 app.listen(3000, () => {
   console.log("Server started!");
 });
-
-console.log('dfsfs');
