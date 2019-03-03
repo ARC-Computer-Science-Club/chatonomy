@@ -11,25 +11,14 @@ var client = redis.createClient({
 
 
 
-["ping", "set", "get"].forEach(eta => {
+["ping", "set", "get", "hmset", "hmget", "expire"].forEach(eta => {
   client["async_" + eta] = promisifyRedis(client, client[eta]);
 });
 
 
-var UserInfoFactory = (phoneNumber, roomID, message) => {
-  var userInfo = {
-    phoneNum: -1,
-    roomID: -1,
-    message: ''
-  };
-
-  return userInfo;
-};
-
-UserInfoFactory.isUserInfo = (maybe) => {
-  return Boolean(maybe && maybe.phoneNum && maybe.roomID && maybe.message);
-};
-
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 
 
 function promisifyRedis (client, func)
@@ -50,17 +39,13 @@ function promisifyRedis (client, func)
 
 
 
-async function userExists (phoneNum)
+async function userExists (phone, roomID)
 {
-  var reply = await client.async_get(phoneNum);
+  var reply = await client.async_hmget(roomID, phone);
   if (reply) return true;
   return false;
 }
 
-
-function validateData(inputData) {
-  throw('validateData - Not implemented');
-}
 
 function sendMessage(userInfo) {
   if ( userInfo.message == '' )
@@ -71,36 +56,36 @@ function sendMessage(userInfo) {
   // twilio - send message to other(s)
 }
 
-function addUser(userInfo) {
-  if ( userExists(userInfo.phoneNum) )
-      return true; // User already exists
 
-  client.set(userInfo.phoneNum)
-  // db - add user
+async function addUser(phone, nickname, roomID) {
+  if ( userExists(phone, roomID) )
+    throw Error("User already exists");
+
+  await client.async_hmset(roomID, [phone, nickname]);
+};
+
+
+async function createRoom() {
+  var roomID;
+
+  do
+  {
+    roomID = getRandomInt(10000000);
+  } while (await roomExists(roomID))
+
+  if ( roomExists(roomID) )
+    throw('RoomID "' + roomID + '" Exists');
+
+  // expire in 48 hours
+  await client.async_hmset(roomID);
+  await client.async_expire(roomID, 60 * 60 * 48);
 }
 
-function joinRoom(roomID) {
-  if ( roomExists(roomID) == false )
-      createRoom(roomID);
 
-  // db - add user to the requested room
-}
-
-function createRoom(idRequest) {
-  //var roomID = NaN;
-
-  if ( roomExists(idRequest) )
-      throw('RoomID "' + idRequest + '" Exists');
-  
-  // db - add idRequest to database and set roomID
-  
-  // db - check db result
-}
-
-function roomExists(roomID) {
-  if ( roomID == -1 )
-    return false;
+async function roomExists(roomID) {
+  if ( await client.async_hmget(roomID) )
+    return true;
   else
     throw('roomExists - Search not implemented yet');
-  //Search database for roomID and return true if found
 }
+
