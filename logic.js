@@ -1,5 +1,5 @@
 const redis = require('redis');
-const sms = require('./message_sms_sender');
+const sms = require('./main');
 const REDISHOST = process.env.REDISHOST || 'localhost';
 const REDISPORT = process.env.REDISPORT || 6379;
 
